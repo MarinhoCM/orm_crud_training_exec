@@ -35,10 +35,35 @@ class Produtos(Mercantil):
             print(row)
             rows.append(row)
 
+        print(f"{len(rows)} linhas foram afetadas")
         return rows
 
-    def select_one_in_table(self, **filter: dict):
-        pass
+    def select_one_in_table(self, sort: str | bool=False, **filter):
+        query = f"SELECT * FROM {self.table} WHERE"
+        for key, value in filter:
+            query += f"{key} = {value}"
+
+        if sort:
+            query = f"SELECT * FROM {self.table} WHERE {filter} LIKE {sort}"
+        else:
+            query = f"SELECT * FROM {self.table} WHERE {filter}"
+
+        print(query)
+        
+        self.cursor.execute(query)
+        rows = []
+
+        for row in self.cursor.fetchall():
+            print(row)
+            rows.append(row)
+        
+        if len(rows) < 1:
+            print("Não foi possivel encontrar a linha especificada")
+        else:
+            print(f"{len(rows)} linhas foram afetadas")
+
+        return rows
+
 
     def insert_in_table(self, obj_list: dict):
         query = self.queries()["QUERY_INSERT_ONE"]
