@@ -1,19 +1,19 @@
 from mysql.connector import connect
 
 
-class Mercantil:
+class Database:
     def __init__(self) -> None:
         self.config: dict = {
-            "user": "root",
+            "user": "ORM",
             "password": "",
             "host": "localhost",
-            "database": "mercantil",
+            "database": "orm",
         }
         self.cnx = connect(**self.config)
         self.cursor = self.cnx.cursor()
 
 
-class Produtos(Mercantil):
+class Shop(Database):
     def __init__(self, table: str) -> None:
         super().__init__()
         self.table = table
@@ -32,13 +32,15 @@ class Produtos(Mercantil):
         rows = []
 
         for row in self.cursor.fetchall():
-            print(row)
+            print("\t" + 27 * "--" + "-")
+            print(f"\t\t{row}")
+            print("\t" + 27 * "--" + "-")
             rows.append(row)
 
-        print(f"{len(rows)} linhas foram afetadas")
+        print(f"\t{len(rows)} linhas foram afetadas")
         return rows
 
-    def select_one_in_table(self, sort: str | bool=False, **filter):
+    def select_one_in_table(self, sort: str | bool = False, **filter):
         query = f"SELECT * FROM {self.table} WHERE"
         for key, value in filter:
             query += f"{key} = {value}"
@@ -49,21 +51,20 @@ class Produtos(Mercantil):
             query = f"SELECT * FROM {self.table} WHERE {filter}"
 
         print(query)
-        
+
         self.cursor.execute(query)
         rows = []
 
         for row in self.cursor.fetchall():
             print(row)
             rows.append(row)
-        
+
         if len(rows) < 1:
-            print("Não foi possivel encontrar a linha especificada")
+            print("\tNão foi possivel encontrar a linha especificada")
         else:
-            print(f"{len(rows)} linhas foram afetadas")
+            print(f"\t{len(rows)} linhas foram afetadas")
 
         return rows
-
 
     def insert_in_table(self, obj_list: dict):
         query = self.queries()["QUERY_INSERT_ONE"]
